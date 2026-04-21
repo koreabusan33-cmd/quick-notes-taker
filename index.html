@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quick Note Taker</title>
     <style>
         body {
@@ -19,27 +19,27 @@
         button {
             padding: 12px 30px;
             font-size: 18px;
-            background: #347566;
+            background: #316357;
             color: white;
             border: none;
             cursor: pointer;
+            border-radius: 5px;
         }
     </style>
 </head>
+
 <body>
-        <h1>📝 Quick Note Taker</h1>
+    <h1>📝Quick Note Taker</h1>
     <textarea id="note" placeholder="Start typing your note..."></textarea>
     <br><br>
-    <button id="save">💾 Save Note</button>
+    <button id="new-note">📄New Note</button>
+    <button id="save">💾Save Note</button>
+    <button id="save-as">📂 Save As</button>
+    <div id="save_status" style="margin-top:10px; color:#666; font-size:0.9em;"></div>
     <script src="renderer.js"></script>
 </body>
-<body>
-    <h1>📝 Quick Note Taker</h1>
-    <textarea id="note" placeholder="Start typing your note..."></textarea>
-    <br><br>
-    <button id="save">💾 Save Note</button>
-    <div id="status" style="margin-top:10px; color:#666; font-size:0.9em;"></div>
-    <script src="renderer.js"></script>
-</body>
+
 </html>
+
+
 
