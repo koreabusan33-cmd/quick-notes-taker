@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Quick Note Taker</title>
+    <style>
+        /* Centralized Theme Variable Settings Mapping Matrices */
+:root {
+    --bg-primary: #F2F5F4;
+    --bg-sidebar: #5F6F68;
+    --bg-editor: #E3EEEA;
+    --bg-note-item: #D6E6E1;
+    --bg-note-item-hover: #C9DDD7;
+    --bg-note-item-active: #B7C9C3;
+
+    --text-primary: #1A2220;
+    --text-sidebar: #F2F5F4;
+    --text-muted: #6F7F78;
+
+    --border-color: #DCE7E3;
+
+    --button-bg: #8FAFBD;
+    --button-hover: #7A98A6;
+
+    --button-delete: #B07A7A;
+    --button-delete-hover: #9A6666;
+}
+body.dark-mode {
+    --bg-primary: #1F2624;
+    --bg-sidebar: #232C29;
+    --bg-editor: #27322F;
+    --bg-note-item: #2F3B37;
+    --bg-note-item-hover: #384742;
+    --bg-note-item-active: #44554F;
+
+    --text-primary: #E4EFEB;
+    --text-sidebar: #D6E6E1;
+    --text-muted: #9AAEA7;
+
+    --border-color: #2D3A36;
+
+    --button-bg: #7C9BA8;
+    --button-hover: #6B8894;
+
+    --button-delete: #9A6B6B;
+    --button-delete-hover: #855A5A;
+}
+
+        /* Base Resets */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: system-ui, -apple-system, sans-serif; 
+            background: var(--bg-primary); 
+            height: 100vh; 
+            overflow: hidden; 
+        }
+
+        #app { display: flex; height: 100vh; }
+
+        #sidebar {
+            width: 220px;
+            background: var(--bg-sidebar);
+            color: var(--text-sidebar);
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            gap: 8px;
+        }
+
+        /* STEP 1: Add Styling for Search Input (Slide 2) */
+        #search {
+            padding: 7px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-note-item);
+            color: var(--text-sidebar);
+            font-size: 13px;
+            width: 100%;
+            outline: none;
+        }
+        #search::placeholder { color: var(--text-muted); }
+
+        #note-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        #editor {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            gap: 10px;
+            background: var(--bg-editor);
+        }
+
+        #note-title {
+            font-size: 18px;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            outline: none;
+            background: var(--bg-editor);
+            color: var(--text-primary);
+        }
+
+        textarea {
+            flex: 1;
+            font-size: 16px;
+            padding: 12px;
+            resize: none;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            outline: none;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        #toolbar { 
+            display: flex; 
+            gap: 8px; 
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 8px 12px;
+            font-size: 14px;
+            background: var(--button-bg);
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+        button:hover { background: var(--button-hover); }
+        button:active { transform: scale(0.98); }
+
+        #new-note { width: 100%; margin-bottom: 2px; }
+
+        /* Integrated styling for the destructive Toolbar Delete button */
+        #delete-note-btn {
+            background: var(--button-delete);
+        }
+        #delete-note-btn:hover {
+            background: var(--button-delete-hover);
+        }
+
+        .note-item {
+            background: var(--bg-note-item);
+            border-radius: 6px;
+            padding: 8px;
+            cursor: pointer;
+            position: relative;
+        }
+        .note-item:hover { background: var(--bg-note-item-hover); }
+        .note-item.active { background: var(--bg-note-item-active); }
+
+        .note-item-title {
+            font-size: 13px;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .note-item-date { 
+            font-size: 11px; 
+            color: var(--text-muted); 
+            margin-top: 3px; 
+        }
+
+        .note-item-delete {
+            background: transparent;
+            color: #ff6b6b;
+            border: none;
+            font-size: 12px;
+            float: right;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        #save_status { font-size: 13px; color: var(--text-muted); }
+        #word-count { font-size: 12px; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div id="sidebar">
+            <button id="new-note">➕ New Note</button>
+            <input type="text" id="search" placeholder="🔍 Search notes...">
+            <div id="note-list"></div>
+        </div>
+
+        <div id="editor">
+            <input type="text" id="note-title" placeholder="Note title...">
+            <textarea id="note" placeholder="Start typing your note..."></textarea>
+            
+            <div id="toolbar">
+                <button id="save">💾 Save</button>
+                <button id="save-as">💾 Save As</button>
+                <button id="open-file">📂 Open File</button>
+                <button id="delete-note-btn">🗑️ Delete Note</button>
+                <button id="font-increase">A+</button>
+                <button id="font-decrease">A-</button>
+                <button id="dark-mode-toggle">🌙 Dark Mode</button>
+                <p id="save_status"></p>
+            </div>
+            <p id="word-count">Words: 0 | Characters: 0</p>
+        </div>
+    </div>
+    <script src="renderer.js"></script>
+</body>
+</html>
